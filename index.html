@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordle Mini-Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header Area -->
+    <header>
+      <div class="header-top">
+        <button id="rules-btn" class="icon-btn" aria-label="Game Rules & Help">
+          📖 Rules
+        </button>
+        <h1>WORDLE</h1>
+        <div class="header-actions">
+          <button id="stats-btn" class="icon-btn" aria-label="Game Statistics">
+            📊 Stats
+          </button>
+          <button id="restart-btn" class="icon-btn" aria-label="Restart Game">
+            🔄 Restart
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls & Status Bar -->
+      <div class="control-bar">
+        <div class="status-badge-container">
+          <span>Status:</span>
+          <span id="game-status" class="status-badge status-ready">READY</span>
+          <select id="difficulty-select" class="icon-btn" style="padding: 2px 6px; margin-left: 8px; font-size: 0.75rem;">
+            <option value="easy">Easy (8 Tries)</option>
+            <option value="medium" selected>Medium (6 Tries)</option>
+            <option value="hard">Hard (4 Tries)</option>
+          </select>
+        </div>
+
+        <div class="a11y-toggles">
+          <button id="sound-toggle-btn" class="toggle-btn" aria-pressed="true" aria-label="Toggle Sound Effects">
+            🔊 Sound: ON
+          </button>
+          <button id="motion-toggle-btn" class="toggle-btn" aria-pressed="false" aria-label="Toggle Reduced Motion">
+            ⚡ Motion: ON
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Game Board -->
+    <main class="board-container" role="main">
+      <div id="board" class="board" role="grid" aria-label="Wordle Game Grid">
+        <!-- 6 Rows x 5 Tiles dynamically injected -->
+      </div>
+    </main>
+
+    <!-- Live Word Definition Box -->
+    <div id="word-definition-container" style="width: 100%; max-width: 350px; margin: 0 auto 10px auto; min-height: 20px;"></div>
+
+    <!-- Virtual On-screen Keyboard -->
+    <div id="keyboard" class="keyboard" role="group" aria-label="Virtual Keyboard">
+      <div class="keyboard-row">
+        <button class="key" data-key="Q">Q</button>
+        <button class="key" data-key="W">W</button>
+        <button class="key" data-key="E">E</button>
+        <button class="key" data-key="R">R</button>
+        <button class="key" data-key="T">T</button>
+        <button class="key" data-key="Y">Y</button>
+        <button class="key" data-key="U">U</button>
+        <button class="key" data-key="I">I</button>
+        <button class="key" data-key="O">O</button>
+        <button class="key" data-key="P">P</button>
+      </div>
+      <div class="keyboard-row">
+        <button class="key" data-key="A">A</button>
+        <button class="key" data-key="S">S</button>
+        <button class="key" data-key="D">D</button>
+        <button class="key" data-key="F">F</button>
+        <button class="key" data-key="G">G</button>
+        <button class="key" data-key="H">H</button>
+        <button class="key" data-key="J">J</button>
+        <button class="key" data-key="K">K</button>
+        <button class="key" data-key="L">L</button>
+      </div>
+      <div class="keyboard-row">
+        <button class="key wide" data-key="ENTER">ENTER</button>
+        <button class="key" data-key="Z">Z</button>
+        <button class="key" data-key="X">X</button>
+        <button class="key" data-key="C">C</button>
+        <button class="key" data-key="V">V</button>
+        <button class="key" data-key="B">B</button>
+        <button class="key" data-key="N">N</button>
+        <button class="key" data-key="M">M</button>
+        <button class="key wide" data-key="BACKSPACE">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite" role="status"></div>
+
+  <!-- Rules Modal -->
+  <div id="rules-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="rules-title" class="modal-title">How To Play</h2>
+        <button id="close-rules-btn" class="close-btn" aria-label="Close Rules">✕</button>
+      </div>
+      <div class="rules-section">
+        <p>Guess the hidden <strong>5-letter word</strong> in <strong>6 tries</strong>.</p>
+        <p>Each guess must be a valid 5-letter word. Hit the <strong>ENTER</strong> key to submit.</p>
+        <p>After each guess, the color of the tiles will change to show how close your guess was to the word:</p>
+
+        <div class="rules-examples">
+          <div class="example-row">
+            <div class="example-tile" style="background-color: var(--color-correct); color: #fff;">W</div>
+            <div class="example-text"><strong>Green</strong>: Letter is in the word and in the correct spot.</div>
+          </div>
+          <div class="example-row">
+            <div class="example-tile" style="background-color: var(--color-present); color: #fff;">I</div>
+            <div class="example-text"><strong>Yellow</strong>: Letter is in the word but in the wrong spot.</div>
+          </div>
+          <div class="example-row">
+            <div class="example-tile" style="background-color: var(--color-absent); color: #fff;">U</div>
+            <div class="example-text"><strong>Gray</strong>: Letter is not in the word in any spot.</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; font-size: 0.85rem; color: #a1a1aa;">
+          <strong>Controls:</strong> Use your physical keyboard (A-Z, Enter, Backspace) or the on-screen buttons.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Modal -->
+  <div id="stats-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="stats-title">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="stats-title" class="modal-title">Statistics</h2>
+        <button id="close-stats-btn" class="close-btn" aria-label="Close Stats">✕</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div id="stat-played" class="stat-num">0</div>
+          <div class="stat-label">Played</div>
+        </div>
+        <div class="stat-item">
+          <div id="stat-winrate" class="stat-num">0%</div>
+          <div class="stat-label">Win %</div>
+        </div>
+        <div class="stat-item">
+          <div id="stat-streak" class="stat-num">0</div>
+          <div class="stat-label">Current Streak</div>
+        </div>
+        <div class="stat-item">
+          <div id="stat-maxstreak" class="stat-num">0</div>
+          <div class="stat-label">Max Streak</div>
+        </div>
+      </div>
+
+      <!-- Live Word Definition Box removed from here -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
