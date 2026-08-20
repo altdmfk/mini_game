@@ -15,7 +15,7 @@
 ## 📋 검증 안내서 (Verification Guide)
 
 ### 📌 어디로 가나요
-* 브라우저(Chrome, Edge 등)에서 https://altdmfk.github.io/mini_game/로 접속합니다.
+* 브라우저(Chrome, Edge 등)에서 https://altdmfk.github.io/mini_game/ 로 접속합니다.
 
 ### 🎮 무엇을 하나요 (3단계 이내)
 1. **시작**: 화면 클릭 또는 **`Space`** 키를 눌러 공룡 런을 시작합니다.
